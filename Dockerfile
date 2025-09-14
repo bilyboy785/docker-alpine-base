@@ -3,8 +3,8 @@ ARG ALPINE_VER=8.4
 
 FROM alpine:3.22
 
-LABEL org.opencontainers.image.title="Nextcloud PHP Apache"
-LABEL org.opencontainers.image.description="Nextcloud container from official PHP Apache"
+LABEL org.opencontainers.image.title="Alpine Base"
+LABEL org.opencontainers.image.description="Base alpine docker image for multi purpose"
 LABEL org.opencontainers.image.url="https://github.com/bilyboy785/docker-alpine-base"
 LABEL org.opencontainers.image.source="https://github.com/bilyboy785/docker-alpine-base"
 LABEL org.opencontainers.image.version="3.22"
