@@ -25,4 +25,3 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
 
 CMD ["/bin/zsh"]
-
