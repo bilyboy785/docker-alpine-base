@@ -1,14 +1,17 @@
 # hadolint ignore=SC2046,DL3008
-ARG ALPINE_VER=8.4
+ARG ALPINE_TAG=3.24
 
-FROM alpine:3.22
+FROM alpine:${ALPINE_TAG}
+
+ARG ALPINE_TAG
+ARG BUILD_DATE
 
 LABEL org.opencontainers.image.title="Alpine Base"
 LABEL org.opencontainers.image.description="Base alpine docker image for multi purpose"
 LABEL org.opencontainers.image.url="https://github.com/bilyboy785/docker-alpine-base"
 LABEL org.opencontainers.image.source="https://github.com/bilyboy785/docker-alpine-base"
-LABEL org.opencontainers.image.version="3.22"
-LABEL org.opencontainers.image.created="2025-09-13T12:00:00Z"
+LABEL org.opencontainers.image.version="${ALPINE_TAG}"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.authors="Martin Bouillaud <contact@bouillaudmartin.fr>"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 

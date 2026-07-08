@@ -3,7 +3,8 @@ name: build-push-docker-image
 on:
   push:
     branches: [ main ]
-    tags: [ 'v*' ]
+  schedule:
+    - cron: '0 0 1 * *'
 
 jobs:
   build-and-push:
@@ -16,36 +17,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_tag: [ "3.22", "3.21", "3.20", "3.19"]
+        alpine_tag: [ "3.24", "3.23", "3.22", "3.21", "3.20", "3.19"]
       
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
+      - name: Set build date
+        id: date
+        run: echo "value=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_TOKEN }}
-      
-      - name: Define image names
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Define image name
         id: names
         run: |
-          echo "ghcr=ghcr.io/bilyboy785/alpine-base" >> $GITHUB_OUTPUT
-          echo "dh=docker.io/martinbouillaud/alpine-base" >> $GITHUB_OUTPUT
+          echo "ghcr=ghcr.io/${{ github.repository }}" >> $GITHUB_OUTPUT
 
       - name: Docker metadata (only <version> tags)
         id: meta
@@ -55,16 +53,15 @@ jobs:
         with:
           images: |
             ${{ steps.names.outputs.ghcr }}
-            ${{ steps.names.outputs.dh }}
           tags: |
-            type=raw,value=${{ matrix.php_tag }}
+            type=raw,value=${{ matrix.alpine_tag }}
           annotations: |
             org.opencontainers.image.title=alpine-base
             org.opencontainers.image.description=Base Alpine image for multi purposes
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ matrix.php_tag }}
+            org.opencontainers.image.version=${{ matrix.alpine_tag }}
             org.opencontainers.image.licenses=Apache-2.0
 
       - name: Build & Push (multi-arch)
@@ -74,7 +71,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: |
-            PHP_TAG=${{ matrix.php_tag }}
+            ALPINE_TAG=${{ matrix.alpine_tag }}
+            BUILD_DATE=${{ steps.date.outputs.value }}
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           cache-from: type=gha
