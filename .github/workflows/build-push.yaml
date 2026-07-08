@@ -43,7 +43,7 @@ jobs:
       - name: Define image name
         id: names
         run: |
-          echo "ghcr=ghcr.io/${{ github.repository }}" >> $GITHUB_OUTPUT
+          echo "ghcr=ghcr.io/${{ github.repository_owner }}/alpine-base" >> $GITHUB_OUTPUT
 
       - name: Docker metadata (only <version> tags)
         id: meta
